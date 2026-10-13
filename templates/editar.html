@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Cliente</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans flex items-center justify-center min-h-screen p-6">
+
+    <div class="max-w-md w-full bg-white shadow-md rounded-xl p-8 border border-gray-100">
+        <h1 class="text-2xl font-bold text-blue-600 mb-6">Editar Datos del Cliente</h1>
+        
+        <form action="/editar/{{ cliente.id }}" method="POST" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-600 mb-1">NIF:</label>
+                <input type="text" name="nif" value="{{ cliente.nif }}" required 
+                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-600 mb-1">Nombre:</label>
+                <input type="text" name="nombre" value="{{ cliente.nombre }}" required 
+                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-600 mb-1">Email:</label>
+                <input type="email" name="email" value="{{ cliente.email }}" required 
+                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-600 mb-1">Teléfono:</label>
+                <input type="text" name="telefono" value="{{ cliente.telefono }}" required 
+                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-600 mb-1">Descuento (%):</label>
+                <input type="number" step="0.1" name="descuento" value="{{ cliente.descuento }}" required 
+                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+            </div>
+            
+            <div class="flex gap-3 pt-2">
+                <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-lg transition duration-200 shadow-md">
+                    Guardar Cambios
+                </button>
+                <a href="/" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2.5 rounded-lg text-center transition duration-200">
+                    Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+
+</body>
+</html>

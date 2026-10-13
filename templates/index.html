@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Clientes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans p-6 md:p-10">
+
+    <div class="max-w-5xl mx-auto space-y-8">
+        
+        <!-- Cabecera -->
+        <header class="bg-white shadow-md rounded-xl p-6 border border-gray-100 flex justify-between items-center">
+            <h1 class="text-2xl md:text-3xl font-bold text-blue-600">Panel de Gestión de Clientes</h1>
+            <a href="/logout" class="bg-red-50 hover:bg-red-100 text-red-600 px-4 py-2 rounded-lg text-sm font-semibold transition duration-200 border border-red-200">
+                Cerrar Sesión
+            </a>
+        </header>
+
+        <!-- Formulario para Añadir Cliente -->
+        <section class="bg-white shadow-md rounded-xl p-6 border border-gray-100">
+            <h2 class="text-xl font-semibold text-gray-700 mb-4">Añadir Nuevo Cliente</h2>
+            <form action="/agregar" method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-600 mb-1">NIF:</label>
+                    <input type="text" name="nif" required placeholder="Ej: 12345678X" 
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-600 mb-1">Nombre:</label>
+                    <input type="text" name="nombre" required placeholder="Nombre y Apellidos" 
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-600 mb-1">Email:</label>
+                    <input type="email" name="email" required placeholder="correo@mail.com" 
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-600 mb-1">Teléfono:</label>
+                    <input type="text" name="telefono" required placeholder="600000000" 
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-600 mb-1">Descuento (%):</label>
+                    <input type="number" step="0.1" name="descuento" required placeholder="10.5" 
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                </div>
+                <div class="md:col-span-2">
+                    <button type="submit" 
+                            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition duration-200 shadow-md">
+                        Guardar Cliente
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Listado de Clientes y Buscador en Tiempo Real -->
+        <section class="bg-white shadow-md rounded-xl p-6 border border-gray-100">
+            <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+                <h2 class="text-xl font-semibold text-gray-700">Clientes Registrados</h2>
+                
+                <!-- Contenedor para buscador y botón de exportar -->
+                <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                    <input type="text" id="searchInput" placeholder="Escribe para buscar" 
+                           class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm w-full md:w-64">
+                    
+                    <a href="/exportar" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-semibold flex items-center justify-center transition duration-200 shadow-sm whitespace-nowrap">
+                        Exportar CSV
+                    </a>
+                </div>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-blue-50 text-blue-800 text-sm uppercase tracking-wider">
+                            <th class="p-3 rounded-l-lg">NIF</th>
+                            <th class="p-3">Nombre</th>
+                            <th class="p-3">Email</th>
+                            <th class="p-3">Teléfono</th>
+                            <th class="p-3">Descuento</th>
+                            <th class="p-3 rounded-r-lg text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaClientes" class="divide-y divide-gray-100 text-sm">
+                        {% for cliente in clientes %}
+                        <tr class="hover:bg-gray-50 transition duration-150">
+                            <td class="p-3 font-semibold text-gray-900">{{ cliente.nif }}</td>
+                            <td class="p-3">{{ cliente.nombre }}</td>
+                            <td class="p-3 text-gray-600">{{ cliente.email }}</td>
+                            <td class="p-3 text-gray-600">{{ cliente.telefono }}</td>
+                            <td class="p-3"><span class="bg-green-100 text-green-800 px-2.5 py-1 rounded-full text-xs font-bold">{{ cliente.descuento }}%</span></td>
+                            <td class="p-3 text-center space-x-2">
+                                <a href="/editar/{{ cliente.id }}" class="text-blue-600 hover:text-blue-800 font-medium">Editar</a>
+                                <a href="/eliminar/{{ cliente.id }}" class="text-red-500 hover:text-red-700 font-medium" onclick="return confirm('¿Seguro que deseas eliminar este cliente?');">Eliminar</a>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="6" class="p-6 text-center text-gray-400">No hay clientes registrados todavía.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Script de búsqueda en tiempo real -->
+    <script>
+        const searchInput = document.getElementById('searchInput');
+        const tableRows = document.querySelectorAll('#tablaClientes tr');
+
+        searchInput.addEventListener('input', function(e) {
+            const term = e.target.value.toLowerCase();
+
+            tableRows.forEach(row => {
+                if (row.cells.length === 1) return;
+
+                const text = row.textContent.toLowerCase();
+                if (text.includes(term)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
