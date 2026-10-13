@@ -1,4 +1,5 @@
 import csv
+import io
 from flask import Flask, render_template, request, redirect, url_for, Response, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
@@ -15,6 +16,8 @@ db = SQLAlchemy(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
+login_manager.login_message = 'Por favor, inicia sesión para acceder a esta página.'
+login_manager.login_message_category = 'error'
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -45,7 +48,6 @@ with app.app_context():
         db.session.commit()
 
 # --- RUTAS DE AUTENTICACIÓN ---
-
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -111,8 +113,6 @@ def editar_cliente(id):
         db.session.commit()
         return redirect(url_for('home'))
     return render_template('editar.html', cliente=cliente)
-
-import io
 
 @app.route('/exportar')
 @login_required
