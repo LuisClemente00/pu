@@ -42,7 +42,7 @@ with app.app_context():
     
     # Crear un usuario administrador por defecto si no existe ninguno
     if not Usuario.query.first():
-        hashed_password = generate_password_hash('PasswordSegura123', method='pbkdf2:sha256')
+        hashed_password = generate_password_hash('admin', method='pbkdf2:sha256')
         admin = Usuario(email='admin@gmail.com', password=hashed_password)
         db.session.add(admin)
         db.session.commit()
