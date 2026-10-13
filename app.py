@@ -36,26 +36,15 @@ class Cliente(db.Model):
 
 with app.app_context():
     db.create_all()
+    
+    # Crear un usuario administrador por defecto si no existe ninguno
+    if not Usuario.query.first():
+        hashed_password = generate_password_hash('PasswordSegura123', method='pbkdf2:sha256')
+        admin = Usuario(email='admin@gmail.com', password=hashed_password)
+        db.session.add(admin)
+        db.session.commit()
 
 # --- RUTAS DE AUTENTICACIÓN ---
-@app.route('/registro', methods=['GET', 'POST'])
-def registro():
-    if request.method == 'POST':
-        email = request.form['email']
-        password = request.form['password']
-        
-        usuario_existente = Usuario.query.filter_by(email=email).first()
-        if usuario_existente:
-            flash('El correo ya está registrado.', 'error')
-            return redirect(url_for('registro'))
-        
-        hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
-        nuevo_usuario = Usuario(email=email, password=hashed_password)
-        db.session.add(nuevo_usuario)
-        db.session.commit()
-        
-        return redirect(url_for('login'))
-    return render_template('registro.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -123,17 +112,28 @@ def editar_cliente(id):
         return redirect(url_for('home'))
     return render_template('editar.html', cliente=cliente)
 
+import io
+
 @app.route('/exportar')
 @login_required
 def exportar_csv():
-    def generar():
-        yield 'NIF,Nombre,Email,Telefono,Descuento\n'
-        clientes = Cliente.query.all()
-        for c in clientes:
-            yield f'{c.nif},{c.nombre},{c.email},{c.telefono},{c.descuento}%\n'
-
+    output = io.StringIO()
+    writer = csv.writer(output)
+    
+    # Escribir la cabecera
+    writer.writerow(['NIF', 'Nombre', 'Email', 'Telefono', 'Descuento'])
+    
+    # Obtener todos los clientes de la base de datos
+    clientes = Cliente.query.all()
+    
+    # Escribir cada cliente en una fila
+    for c in clientes:
+        writer.writerow([c.nif, c.nombre, c.email, c.telefono, f"{c.descuento}%"])
+    
+    # Preparar la respuesta para descargar
+    output.seek(0)
     return Response(
-        generar(),
+        output.getvalue(),
         mimetype='text/csv',
         headers={"Content-Disposition": "attachment; filename=clientes.csv"}
     )
